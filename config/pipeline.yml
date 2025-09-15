@@ -1,0 +1,58 @@
+# config/pipeline.yml
+# Main configuration file for the crypto trading pipeline
+
+kafka:
+  bootstrap_servers: "kafka:29092"
+  topics:
+    raw_data: "raw_data"
+    processed_data: "processed_data"
+  consumer_group: "stream-processor"
+  producer_config:
+    acks: "all"
+    retries: 3
+    batch_size: 16384
+    linger_ms: 10
+    compression_type: "gzip"
+  consumer_config:
+    auto_offset_reset: "latest"
+    enable_auto_commit: false
+    max_poll_records: 100
+
+database:
+  host: "postgres"
+  port: 5432
+  database: "crypto_pipeline"
+  user: "pipeline_user"
+  password: "pipeline_password"
+  connection_pool:
+    min_connections: 1
+    max_connections: 10
+
+binance:
+  websocket_url: "wss://stream.binance.com:9443/ws/"
+  symbols:
+    - "btcusdt"
+    - "ethusdt"
+    - "adausdt"
+    - "bnbusdt"
+    - "solusdt"
+    - "dotusdt"
+    - "linkusdt"
+    - "ltcusdt"
+  reconnect_delay: 5
+
+processing:
+  window_size_minutes: 1
+  batch_size: 100
+  aggregation_interval: 60  # seconds
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "/app/logs/pipeline.log"
+  max_size: "10MB"
+  backup_count: 5
+
+monitoring:
+  health_check_interval: 30  # seconds
+  metrics_export_interval: 60  # seconds

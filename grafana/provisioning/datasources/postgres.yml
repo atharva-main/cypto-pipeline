@@ -1,0 +1,18 @@
+# grafana/provisioning/datasources/postgres.yml
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL
+    type: postgres
+    url: postgres:5432
+    database: crypto_pipeline
+    user: pipeline_user
+    secureJsonData:
+      password: pipeline_password
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 100
+      maxIdleConns: 100
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: false

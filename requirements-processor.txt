@@ -1,0 +1,5 @@
+kafka-python
+psycopg2-binary
+pyyaml
+pandas
+numpy

@@ -1,0 +1,41 @@
+crypto-trading-pipeline/
+├── docker-compose.yml                 # Main orchestration file
+├── Dockerfile.producer               # Producer container
+├── Dockerfile.processor              # Processor container
+├── requirements-producer.txt         # Producer dependencies
+├── requirements-processor.txt        # Processor dependencies
+├── Makefile                         # Management commands
+├── README.md                        # Documentation
+├── ubuntu-setup.sh                  # Quick setup script
+│
+├── sql/
+│   └── init.sql                     # Database schema
+│
+├── src/
+│   ├── producer/
+│   │   └── binance_producer.py      # WebSocket → Kafka
+│   └── processor/
+│       └── stream_processor.py      # Kafka → PostgreSQL
+│
+├── config/
+│   ├── pipeline.yml                 # Main config
+│   └── environment.env              # Environment vars
+│
+├── grafana/
+│   ├── provisioning/
+│   │   ├── datasources/
+│   │   │   └── postgres.yml         # DB connection
+│   │   └── dashboards/
+│   │       └── dashboard.yml        # Dashboard config
+│   └── dashboards/
+│       └── crypto-dashboard.json    # Dashboard definition
+│
+├── scripts/
+│   ├── start.sh                     # Start pipeline
+│   ├── stop.sh                      # Stop pipeline
+│   ├── logs.sh                      # View logs
+│   ├── health-check.sh              # Health monitoring
+│   ├── reset.sh                     # Reset everything
+│   └── monitor.sh                   # Real-time monitoring
+│
+└── logs/                            # Application logs (auto-created)

@@ -1,0 +1,5 @@
+kafka-python
+websockets
+asyncio-mqtt
+pyyaml
+requests
