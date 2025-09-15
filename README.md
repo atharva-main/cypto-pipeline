@@ -19,16 +19,16 @@ Binance WebSocket → Kafka (raw_data) → Stream Processor → Kafka (processed
 
 ## 📋 Features
 
-- ✅ Real-time streaming from Binance WebSocket API
-- ✅ Fault-tolerant message processing with Kafka
-- ✅ ETL pipeline with data validation and transformation
-- ✅ 1-minute rolling window aggregations (OHLCV data)
-- ✅ PostgreSQL storage with optimized schema
-- ✅ Real-time Grafana dashboards
-- ✅ Docker-based deployment
-- ✅ Comprehensive logging and monitoring
-- ✅ Health checks and alerting
-- ✅ Horizontal scalability
+- Real-time streaming from Binance WebSocket API
+- Fault-tolerant message processing with Kafka
+- ETL pipeline with data validation and transformation
+- 1-minute rolling window aggregations (OHLCV data)
+- PostgreSQL storage with optimized schema
+- Real-time Grafana dashboards
+- Docker-based deployment
+- Comprehensive logging and monitoring
+- Health checks and alerting
+- Horizontal scalability
 
 ## 🛠️ Prerequisites
 
@@ -207,48 +207,6 @@ docker-compose exec postgres psql -U pipeline_user -d crypto_pipeline -c "SELECT
 ./scripts/reset.sh
 ```
 
-## 🔧 Development
-
-### Project Structure
-```
-crypto-trading-pipeline/
-├── docker-compose.yml          # Service orchestration
-├── sql/init.sql               # Database schema
-├── src/
-│   ├── producer/              # Data producer (Binance → Kafka)
-│   └── processor/             # Stream processor (Kafka → PostgreSQL)
-├── config/                    # Configuration files
-├── scripts/                   # Management scripts
-├── grafana/                   # Dashboard and provisioning
-├── logs/                      # Application logs
-└── README.md                  # This file
-```
-
-### Adding New Data Sources
-
-1. Create new producer in `src/producer/`
-2. Update `docker-compose.yml` with new service
-3. Modify database schema if needed
-4. Update Grafana dashboards
-
-### Scaling Considerations
-
-- **Horizontal Scaling**: Add more Kafka partitions and consumer instances
-- **Database**: Consider TimescaleDB for time-series optimization
-- **Caching**: Add Redis for frequently accessed data
-- **Load Balancing**: Use multiple WebSocket connections
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and test thoroughly
-4. Submit a pull request
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgments
 
 - Binance for providing excellent WebSocket API
@@ -256,14 +214,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Grafana for beautiful visualizations
 - PostgreSQL for robust data storage
 
-## 📞 Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review logs with `./scripts/logs.sh`
-3. Run health checks with `./scripts/health-check.sh`
-4. Open an issue on GitHub
-
 ---
-
-**Happy Trading! 📈**
