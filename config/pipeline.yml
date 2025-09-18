@@ -29,7 +29,7 @@ database:
     max_connections: 10
 
 binance:
-  websocket_url: "wss://stream.binance.com:9443/ws/"
+  websocket_url: "wss://stream.binance.com:9443/ws"
   symbols:
     - "btcusdt"
     - "ethusdt"

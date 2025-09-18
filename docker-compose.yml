@@ -113,6 +113,7 @@ services:
       KAFKA_TOPIC_RAW: raw_data
       LOG_LEVEL: INFO
     volumes:
+      - ./src/producer:/app/src/producer
       - ./config:/app/config
       - ./logs:/app/logs
     restart: unless-stopped

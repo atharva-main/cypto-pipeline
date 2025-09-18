@@ -42,7 +42,7 @@ class BinanceWebSocketProducer:
         self.running = True
         
         # Binance WebSocket URL
-        self.ws_url = "wss://stream.binance.com:9443/ws/"
+        self.ws_url = "wss://stream.binance.com:9443/ws"
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self._signal_handler)
