@@ -13,13 +13,20 @@ from kafka import KafkaProducer # type: ignore
 from kafka.errors import KafkaError # type: ignore
 
 # Configure logging
+log_handlers = [logging.StreamHandler(sys.stdout)]
+try:
+    # Only add file handler if logs directory exists or can be created
+    log_dir = '/app/logs'
+    os.makedirs(log_dir, exist_ok=True)
+    log_handlers.append(logging.FileHandler('/app/logs/producer.log'))
+except (PermissionError, OSError):
+    # Fall back to stdout only if file logging fails
+    pass
+
 logging.basicConfig(
     level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO')),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/app/logs/producer.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
+    handlers=log_handlers
 )
 
 logger = logging.getLogger(__name__)
