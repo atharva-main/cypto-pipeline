@@ -1,4 +1,3 @@
--- sql/init.sql
 -- Database initialization script for crypto trading pipeline
 
 -- Create extensions
@@ -14,7 +13,7 @@ CREATE TABLE IF NOT EXISTS raw_trades (
     trade_id BIGINT,
     is_buyer_maker BOOLEAN,
     raw_data JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    processed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- renamed to match Python
 );
 
 -- Create processed trades table with aggregated data
@@ -26,20 +25,19 @@ CREATE TABLE IF NOT EXISTS processed_trades (
     trade_count INTEGER NOT NULL,
     min_price DECIMAL(20, 8) NOT NULL,
     max_price DECIMAL(20, 8) NOT NULL,
+    vwap DECIMAL(20, 8),                  -- added for processor
+    total_volume_usd DECIMAL(30, 10),     -- added for processor
     window_start TIMESTAMP WITH TIME ZONE NOT NULL,
     window_end TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create market summary table for dashboard
+-- Create market summary table for dashboard (simplified to match processor)
 CREATE TABLE IF NOT EXISTS market_summary (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(20) NOT NULL,
     current_price DECIMAL(20, 8) NOT NULL,
-    price_change_24h DECIMAL(10, 4),
     volume_24h DECIMAL(20, 8),
-    high_24h DECIMAL(20, 8),
-    low_24h DECIMAL(20, 8),
     last_updated TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -59,10 +57,7 @@ CREATE OR REPLACE VIEW latest_market_data AS
 SELECT DISTINCT ON (symbol)
     symbol,
     current_price,
-    price_change_24h,
     volume_24h,
-    high_24h,
-    low_24h,
     last_updated
 FROM market_summary
 ORDER BY symbol, last_updated DESC;
@@ -84,11 +79,11 @@ GROUP BY symbol
 ORDER BY total_volume DESC;
 
 -- Insert some initial test data (optional)
-INSERT INTO market_summary (symbol, current_price, price_change_24h, volume_24h, high_24h, low_24h, last_updated)
+INSERT INTO market_summary (symbol, current_price, volume_24h, last_updated)
 VALUES 
-    ('BTCUSDT', 45000.00, 2.50, 1000.50, 46000.00, 44000.00, NOW()),
-    ('ETHUSDT', 3000.00, -1.20, 800.25, 3100.00, 2950.00, NOW()),
-    ('ADAUSDT', 0.45, 3.80, 5000.75, 0.48, 0.42, NOW())
+    ('BTCUSDT', 45000.00, 1000.50, NOW()),
+    ('ETHUSDT', 3000.00, 800.25, NOW()),
+    ('ADAUSDT', 0.45, 5000.75, NOW())
 ON CONFLICT DO NOTHING;
 
 -- Grant permissions
