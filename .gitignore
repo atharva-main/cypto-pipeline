@@ -16,6 +16,9 @@ venv/
 ENV/
 env/
 
+# Trades Data
+/data
+
 # Jupyter notebooks checkpoints
 .ipynb_checkpoints/
 
