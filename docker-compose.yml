@@ -140,9 +140,35 @@ services:
       POSTGRES_PASSWORD: pipeline_password
       LOG_LEVEL: INFO
     volumes:
+      - ./src/processor:/app/src/processor
       - ./config:/app/config
       - ./logs:/app/logs
     restart: unless-stopped
+
+  # Machine Learning Service
+  # ml-service:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.ml
+  #   container_name: ml-service
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_PORT: 5432
+  #     POSTGRES_DB: crypto_pipeline
+  #     POSTGRES_USER: pipeline_user
+  #     POSTGRES_PASSWORD: pipeline_password
+  #     MODEL_PATH: /app/model/latest_model.pkl
+  #     LOG_LEVEL: INFO
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./src/ml_service:/app/src/ml_service
+  #     - ./models:/app/model
+  #     - ./logs:/app/logs
+  #   restart: unless-stopped
+
 
 volumes:
   zookeeper-data:

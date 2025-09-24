@@ -42,6 +42,16 @@ CREATE TABLE IF NOT EXISTS market_summary (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create machine learning predictions table
+CREATE TABLE IF NOT EXISTS ml_predictions (
+    id SERIAL PRIMARY KEY,
+    symbol VARCHAR(20) NOT NULL,
+    predicted_price DECIMAL(20, 8) NOT NULL,
+    prediction_window INTERVAL NOT NULL,  -- e.g. '5 minutes'
+    prediction_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_raw_trades_symbol_time ON raw_trades(symbol, trade_time);
 CREATE INDEX IF NOT EXISTS idx_raw_trades_time ON raw_trades(trade_time DESC);
@@ -51,6 +61,9 @@ CREATE INDEX IF NOT EXISTS idx_processed_trades_window_start ON processed_trades
 
 CREATE INDEX IF NOT EXISTS idx_market_summary_symbol ON market_summary(symbol);
 CREATE INDEX IF NOT EXISTS idx_market_summary_updated ON market_summary(last_updated DESC);
+
+CREATE INDEX IF NOT EXISTS idx_ml_predictions_symbol_time ON ml_predictions(symbol, prediction_time DESC);
+CREATE INDEX IF NOT EXISTS idx_ml_predictions_time ON ml_predictions(prediction_time DESC);
 
 -- Create a view for latest market data
 CREATE OR REPLACE VIEW latest_market_data AS
@@ -78,13 +91,31 @@ WHERE trade_time >= NOW() - INTERVAL '1 hour'
 GROUP BY symbol
 ORDER BY total_volume DESC;
 
--- Insert some initial test data (optional)
-INSERT INTO market_summary (symbol, current_price, volume_24h, last_updated)
-VALUES 
-    ('BTCUSDT', 45000.00, 1000.50, NOW()),
-    ('ETHUSDT', 3000.00, 800.25, NOW()),
-    ('ADAUSDT', 0.45, 5000.75, NOW())
-ON CONFLICT DO NOTHING;
+-- Create a view for hourly aggregated trades
+CREATE OR REPLACE VIEW hourly_aggregated_trades AS
+SELECT 
+    symbol,
+    DATE_TRUNC('hour', window_start) as hour,
+    AVG(avg_price) as avg_price,
+    SUM(total_volume) as total_volume,
+    SUM(trade_count) as trade_count,
+    MIN(min_price) as min_price,
+    MAX(max_price) as max_price,
+    AVG(vwap) as vwap,
+    SUM(total_volume_usd) as total_volume_usd
+FROM processed_trades
+GROUP BY symbol, DATE_TRUNC('hour', window_start)
+ORDER BY hour DESC, symbol;
+
+-- Create a view for machine learning predictions
+CREATE OR REPLACE VIEW latest_ml_predictions AS
+SELECT DISTINCT ON (symbol)
+    symbol,
+    prediction,
+    prediction_time
+FROM ml_predictions
+ORDER BY symbol, prediction_time DESC;
+
 
 -- Grant permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pipeline_user;
